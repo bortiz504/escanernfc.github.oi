@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Lector NFC</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 20px; }
+    #log { margin-top: 20px; border: 1px solid #ccc; padding: 10px; height: 200px; overflow-y: auto; }
+    button { padding: 10px 20px; font-size: 16px; }
+  </style>
+</head>
+<body>
+  <h1>Lector NFC con JavaScript</h1>
+  <button id="startScan">Iniciar escaneo NFC</button>
+
+  <div id="log"></div>
+
+  <script>
+    const log = document.getElementById("log");
+
+    function appendLog(msg) {
+      log.innerHTML += msg + "<br>";
+      log.scrollTop = log.scrollHeight;
+    }
+
+    document.getElementById("startScan").addEventListener("click", async () => {
+      if ("NDEFReader" in window) {
+        const ndef = new NDEFReader();
+        try {
+          await ndef.scan();
+          appendLog("Escaneando NFC... Acerca tu etiqueta al teléfono.");
+
+          ndef.onreading = event => {
+            appendLog("¡Etiqueta detectada!");
+            const message = event.message;
+            for (const record of message.records) {
+              const textDecoder = new TextDecoder();
+              let data = "";
+              if (record.recordType === "text") {
+                data = textDecoder.decode(record.data);
+              } else if (record.recordType === "url") {
+                data = textDecoder.decode(record.data);
+              } else {
+                data = "[Tipo desconocido]";
+              }
+              appendLog(`Tipo: ${record.recordType}, Datos: ${data}`);
+            }
+          };
+
+          ndef.onreadingerror = () => {
+            appendLog("Error leyendo la etiqueta NFC.");
+          };
+
+        } catch (error) {
+          appendLog("No se pudo iniciar el escaneo: " + error);
+        }
+      } else {
+        appendLog("Este navegador no soporta Web NFC.");
+      }
+    });
+  </script>
+</body>
+</html>
