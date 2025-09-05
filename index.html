@@ -10,7 +10,7 @@
   </style>
 </head>
 <body>
-  <h1>Lector NFC con JavaScript</h1>
+  <h1>Lector NFC con JavaScript Json</h1>
   <button id="startScan">Iniciar escaneo NFC</button>
 
   <div id="log"></div>
@@ -18,8 +18,11 @@
   <script>
     const log = document.getElementById("log");
 
-    function appendLog(msg) {
-      log.innerHTML += msg + "<br>";
+    function appendLog(msg, isError = false) {
+      const span = document.createElement("div");
+      span.textContent = msg;
+      if (isError) span.classList.add("error");
+      log.appendChild(span);
       log.scrollTop = log.scrollHeight;
     }
 
@@ -28,36 +31,40 @@
         const ndef = new NDEFReader();
         try {
           await ndef.scan();
-          appendLog("Escaneando NFC... Acerca tu etiqueta al teléfono.");
+          appendLog("📡 Escaneando NFC... Acerca tu etiqueta al teléfono.");
 
           ndef.onreading = event => {
-            appendLog("¡Etiqueta detectada!");
+            appendLog("✅ ¡Etiqueta detectada!");
             const message = event.message;
+
             for (const record of message.records) {
               const textDecoder = new TextDecoder();
-              let data = "";
-              if (record.recordType === "text") {
-                data = textDecoder.decode(record.data);
-              } else if (record.recordType === "url") {
-                data = textDecoder.decode(record.data);
-              } else {
-                data = "[Tipo desconocido]";
+              let rawData = textDecoder.decode(record.data);
+
+              appendLog(`📄 Datos brutos: ${rawData}`);
+
+              try {
+                const jsonData = JSON.parse(rawData);
+                appendLog("🔍 JSON detectado:");
+                appendLog(JSON.stringify(jsonData, null, 2));
+              } catch (e) {
+                appendLog("⚠️ No es un JSON válido.", true);
               }
-              appendLog(`Tipo: ${record.recordType}, Datos: ${data}`);
             }
           };
 
           ndef.onreadingerror = () => {
-            appendLog("Error leyendo la etiqueta NFC.");
+            appendLog("❌ Error leyendo la etiqueta NFC.", true);
           };
 
         } catch (error) {
-          appendLog("No se pudo iniciar el escaneo: " + error);
+          appendLog("❌ No se pudo iniciar el escaneo: " + error, true);
         }
       } else {
-        appendLog("Este navegador no soporta Web NFC.");
+        appendLog("⚠️ Este navegador no soporta Web NFC.", true);
       }
     });
   </script>
 </body>
 </html>
+
