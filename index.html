@@ -29,7 +29,7 @@
     document.getElementById("titulo").innerText = "Lector NFC con JavaScript Json " + envio;
     $("#btnGet").click(function() {
     $.ajax({
-      url: "https://producciondinantwebapi.dinantnest.com/api/TerrestreApi/GetUsuarioMaquinaEmpacadores?usuario=eprogram&password=1234$&mac=54:0D:F9:EA:AC:C2", // API de prueba HTTPS
+      url: "https://cors-anywhere.herokuapp.com/https://producciondinantwebapi.dinantnest.com/api/TerrestreApi/GetUsuarioMaquinaEmpacadores?usuario=eprogram&password=1234$&mac=54:0D:F9:EA:AC:C2", // API de prueba HTTPS
       type: "GET",
       success: function(data) {
         $("#resultado").html(
@@ -94,6 +94,7 @@
   </script>
 </body>
 </html>
+
 
 
 
