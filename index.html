@@ -27,7 +27,7 @@
 
     document.getElementById("titulo").innerText = "Lector NFC con JavaScript Json " + envio;
     function hacerGet() {
-        fetch("https://producciondinantwebapi.dinantnest.com/api/TerrestreApi/GetUsuarioMaquinaEmpacadores?usuario=eprogram&password=1234$&mac=54:0D:F9:EA:AC:C2")
+        fetch("http://producciondinantwebapi.dinantnest.com/api/TerrestreApi/GetUsuarioMaquinaEmpacadores?usuario=eprogram&password=1234$&mac=54:0D:F9:EA:AC:C2")
           .then(response => response.json())
           .then(data => {
             document.getElementById("resultado").innerHTML =
@@ -87,6 +87,7 @@
   </script>
 </body>
 </html>
+
 
 
 
