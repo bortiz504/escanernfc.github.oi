@@ -32,9 +32,10 @@
       url: "https://cors-anywhere.herokuapp.com/https://producciondinantwebapi.dinantnest.com/api/TerrestreApi/GetUsuarioMaquinaEmpacadores?usuario=eprogram&password=1234$&mac=54:0D:F9:EA:AC:C2", // API de prueba HTTPS
       type: "GET",
       success: function(data) {
+         //"<strong>Título:</strong> " + data.title + "<br>" +
+         // "<strong>Contenido:</strong> " + data.body
         $("#resultado").html(
-          "<strong>Título:</strong> " + data.title + "<br>" +
-          "<strong>Contenido:</strong> " + data.body
+         data
         );
       },
       error: function(xhr, status, error) {
@@ -94,6 +95,7 @@
   </script>
 </body>
 </html>
+
 
 
 
