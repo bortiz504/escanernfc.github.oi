@@ -12,8 +12,10 @@
 <body>
   <h1 id="titulo">Lector NFC con JavaScript Json</h1>
   <button id="startScan">Iniciar escaneo NFC</button>
+  <button onclick="hacerGet()">Ejecutar GET</button>
 
   <div id="log"></div>
+  <div id="resultado"></div>
 
   <script>
      // Obtener parámetros de la URL
@@ -24,7 +26,16 @@
   const id = params.get("id");
 
     document.getElementById("titulo").innerText = "Lector NFC con JavaScript Json " + envio;
-    
+    function hacerGet() {
+        fetch("https://producciondinantwebapi.dinantnest.com/api/TerrestreApi/GetUsuarioMaquinaEmpacadores?usuario=eprogram&password=1234$&mac=54:0D:F9:EA:AC:C2")
+          .then(response => response.json())
+          .then(data => {
+            document.getElementById("resultado").innerHTML =
+              "<strong>Título:</strong> " + data.title + "<br>" +
+              "<strong>Contenido:</strong> " + data.body;
+          })
+          .catch(error => console.error("Error en fetch:", error));
+      }
     const log = document.getElementById("log");
 
     function appendLog(msg, isError = false) {
@@ -76,6 +87,7 @@
   </script>
 </body>
 </html>
+
 
 
 
