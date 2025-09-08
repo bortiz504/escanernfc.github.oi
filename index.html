@@ -10,12 +10,21 @@
   </style>
 </head>
 <body>
-  <h1>Lector NFC con JavaScript Json</h1>
+  <h1 id="titulo">Lector NFC con JavaScript Json</h1>
   <button id="startScan">Iniciar escaneo NFC</button>
 
   <div id="log"></div>
 
   <script>
+     // Obtener parámetros de la URL
+    const params = new URLSearchParams(window.location.search);
+
+  // Ejemplos
+  const envio = params.get("envio"); 
+  const id = params.get("id");
+
+    $("#titulo").val(envio);
+    
     const log = document.getElementById("log");
 
     function appendLog(msg, isError = false) {
@@ -67,4 +76,5 @@
   </script>
 </body>
 </html>
+
 
