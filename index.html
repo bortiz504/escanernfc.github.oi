@@ -27,14 +27,20 @@
 
     document.getElementById("titulo").innerText = "Lector NFC con JavaScript Json " + envio;
     function hacerGet() {
-        fetch("http://producciondinantwebapi.dinantnest.com/api/TerrestreApi/GetUsuarioMaquinaEmpacadores?usuario=eprogram&password=1234$&mac=54:0D:F9:EA:AC:C2")
-          .then(response => response.json())
-          .then(data => {
-            document.getElementById("resultado").innerHTML =
-              "<strong>Título:</strong> " + data.title + "<br>" +
-              "<strong>Contenido:</strong> " + data.body;
-          })
-          .catch(error => console.error("Error en fetch:", error));
+        (async () => {
+            try {
+              const response = await fetch("https://producciondinantwebapi.dinantnest.com/api/TerrestreApi/GetUsuarioMaquinaEmpacadores?usuario=eprogram&password=1234$&mac=54:0D:F9:EA:AC:C2");
+              const data = await response.json();
+             
+              // Mostrar en alert (solo título para que sea corto)
+              alert("Título: " + data);
+              console.log(data)
+            } catch (error) {
+              console.log(error)
+              alert("Error en la petición: " + error);
+            }
+          })();
+ 
       }
     const log = document.getElementById("log");
 
@@ -87,6 +93,7 @@
   </script>
 </body>
 </html>
+
 
 
 
