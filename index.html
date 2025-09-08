@@ -34,8 +34,9 @@
       success: function(data) {
          //"<strong>Título:</strong> " + data.title + "<br>" +
          // "<strong>Contenido:</strong> " + data.body
+        console.log(data);
         $("#resultado").html(
-         data
+         data.Idusuario
         );
       },
       error: function(xhr, status, error) {
@@ -95,6 +96,7 @@
   </script>
 </body>
 </html>
+
 
 
 
