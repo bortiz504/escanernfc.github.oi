@@ -23,9 +23,7 @@
   const envio = params.get("envio"); 
   const id = params.get("id");
 
-    console.log(envio);
-
-    $("#titulo").text("Lector NFC con JavaScript Json /" + envio);
+    document.getElementById("titulo").innerText = "Lector NFC con JavaScript Json /" + envio;
     
     const log = document.getElementById("log");
 
@@ -78,6 +76,7 @@
   </script>
 </body>
 </html>
+
 
 
 
