@@ -2,102 +2,287 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>Lector NFC</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>NFC App</title>
+
+  <!-- Bootstrap -->
+  <link
+    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+    rel="stylesheet"
+  >
+
   <style>
-    body { font-family: Arial, sans-serif; padding: 20px; }
-    #log { margin-top: 20px; border: 1px solid #ccc; padding: 10px; height: 200px; overflow-y: auto; }
-    button { padding: 10px 20px; font-size: 16px; }
-  </style>
-  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-</head>
-<body>
-  <h1 id="titulo">Lector NFC con JavaScript Json</h1>
-  <button id="startScan">Iniciar escaneo NFC</button>
-  <button id="btnGet">Ejecutar GET</button>
 
-  <div id="log"></div>
-  <div id="resultado"></div>
-
-  <script>
-     // Obtener parámetros de la URL
-    const params = new URLSearchParams(window.location.search);
-
-  // Ejemplos
-  const envio = params.get("envio"); 
-  const id = params.get("id");
-
-    document.getElementById("titulo").innerText = "Lector NFC con JavaScript Json " + envio;
-    $("#btnGet").click(function() {
-    $.ajax({
-      url: "https://cors-anywhere.herokuapp.com/https://producciondinantwebapi.dinantnest.com/api/TerrestreApi/GetUsuarioMaquinaEmpacadores?usuario=eprogram&password=1234$&mac=54:0D:F9:EA:AC:C2", // API de prueba HTTPS
-      type: "GET",
-      success: function(data) {
-         //"<strong>Título:</strong> " + data.title + "<br>" +
-         // "<strong>Contenido:</strong> " + data.body
-        console.log(data);
-        $("#resultado").html(
-         data.Idusuario
-        );
-      },
-      error: function(xhr, status, error) {
-        console.error("Error en la petición:", error);
-        $("#resultado").html("Error al realizar la petición: " + error);
-      }
-    });
-  });
-    const log = document.getElementById("log");
-
-    function appendLog(msg, isError = false) {
-      const span = document.createElement("div");
-      span.textContent = msg;
-      if (isError) span.classList.add("error");
-      log.appendChild(span);
-      log.scrollTop = log.scrollHeight;
+    body{
+      background:#0f172a;
+      color:white;
+      min-height:100vh;
     }
 
-    document.getElementById("startScan").addEventListener("click", async () => {
-      if ("NDEFReader" in window) {
-        const ndef = new NDEFReader();
-        try {
-          await ndef.scan();
-          appendLog("📡 Escaneando NFC... Acerca tu etiqueta al teléfono.");
+    .card-custom{
+      background:#1e293b;
+      border:none;
+      border-radius:20px;
+    }
 
-          ndef.onreading = event => {
-            appendLog("✅ ¡Etiqueta detectada!");
-            const message = event.message;
+    .resultado{
+      background:#020617;
+      color:#22c55e;
+      min-height:180px;
+      border-radius:12px;
+      padding:15px;
+      overflow:auto;
+      white-space:pre-wrap;
+    }
 
-            for (const record of message.records) {
-              const textDecoder = new TextDecoder();
-              let rawData = textDecoder.decode(record.data);
+  </style>
+</head>
 
-              appendLog(`📄 Datos brutos: ${rawData}`);
+<body>
 
-              try {
-                const jsonData = JSON.parse(rawData);
-                appendLog("🔍 JSON detectado:");
-                appendLog(JSON.stringify(jsonData, null, 2));
-              } catch (e) {
-                appendLog("⚠️ No es un JSON válido.", true);
-              }
-            }
-          };
+<div class="container py-5">
 
-          ndef.onreadingerror = () => {
-            appendLog("❌ Error leyendo la etiqueta NFC.", true);
-          };
+  <div class="row justify-content-center">
 
-        } catch (error) {
-          appendLog("❌ No se pudo iniciar el escaneo: " + error, true);
-        }
-      } else {
-        appendLog("⚠️ Este navegador no soporta Web NFC.", true);
+    <div class="col-lg-7">
+
+      <div class="card card-custom shadow-lg">
+
+        <div class="card-body p-4">
+
+          <h1 class="text-center mb-4">
+            NFC + JavaScript + Bootstrap
+          </h1>
+
+          <!-- INPUT -->
+          <div class="mb-3">
+
+            <label class="form-label">
+              Texto para escribir en NFC
+            </label>
+
+            <input
+              type="text"
+              id="textoNFC"
+              class="form-control form-control-lg"
+              placeholder="Escribe algo..."
+            >
+
+          </div>
+
+          <!-- BOTONES -->
+          <div class="d-grid gap-3">
+
+            <button
+              class="btn btn-success btn-lg"
+              onclick="leerNFC()">
+              Leer NFC
+            </button>
+
+            <button
+              class="btn btn-primary btn-lg"
+              onclick="escribirNFC()">
+              Escribir NFC
+            </button>
+
+            <button
+              class="btn btn-warning btn-lg"
+              onclick="modificarNFC()">
+              Modificar NFC
+            </button>
+
+            <button
+              class="btn btn-danger btn-lg"
+              onclick="borrarNFC()">
+              Borrar NFC
+            </button>
+
+          </div>
+
+          <!-- RESULTADO -->
+          <div class="mt-4">
+
+            <h4>Resultado</h4>
+
+            <div
+              id="resultado"
+              class="resultado">
+
+Esperando acción NFC...
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
+
+<script>
+
+const resultado =
+  document.getElementById("resultado");
+
+
+// VALIDAR SOPORTE NFC
+function verificarNFC() {
+
+  if (!("NDEFReader" in window)) {
+
+    resultado.innerHTML =
+      "❌ Este dispositivo no soporta Web NFC";
+
+    return false;
+  }
+
+  return true;
+}
+
+
+// LEER NFC
+async function leerNFC() {
+
+  if (!verificarNFC()) return;
+
+  try {
+
+    const ndef = new NDEFReader();
+
+    resultado.innerHTML =
+      "📲 Acerca una tarjeta NFC...";
+
+    await ndef.scan();
+
+    ndef.onreading = event => {
+
+      const decoder = new TextDecoder();
+
+      let contenido = "";
+
+      for (const record of event.message.records) {
+
+        contenido += decoder.decode(record.data);
       }
-    });
-  </script>
+
+      resultado.innerHTML =
+        "✅ NFC LEÍDA\n\n" + contenido;
+    };
+
+  } catch (error) {
+
+    resultado.innerHTML =
+      "❌ Error al leer NFC\n\n" + error;
+  }
+}
+
+
+// ESCRIBIR NFC
+async function escribirNFC() {
+
+  if (!verificarNFC()) return;
+
+  try {
+
+    const texto =
+      document.getElementById("textoNFC").value;
+
+    if (texto.trim() === "") {
+
+      resultado.innerHTML =
+        "⚠️ Debes escribir un texto";
+
+      return;
+    }
+
+    const ndef = new NDEFReader();
+
+    resultado.innerHTML =
+      "📲 Acerca la NFC para escribir...";
+
+    await ndef.write(texto);
+
+    resultado.innerHTML =
+      "✅ NFC escrita correctamente\n\n" + texto;
+
+  } catch (error) {
+
+    resultado.innerHTML =
+      "❌ Error al escribir\n\n" + error;
+  }
+}
+
+
+// MODIFICAR NFC
+async function modificarNFC() {
+
+  if (!verificarNFC()) return;
+
+  try {
+
+    const texto =
+      document.getElementById("textoNFC").value;
+
+    if (texto.trim() === "") {
+
+      resultado.innerHTML =
+        "⚠️ Debes escribir un nuevo texto";
+
+      return;
+    }
+
+    const ndef = new NDEFReader();
+
+    resultado.innerHTML =
+      "📲 Acerca la NFC para modificar...";
+
+    await ndef.write(texto);
+
+    resultado.innerHTML =
+      "✅ NFC modificada\n\nNuevo contenido:\n" + texto;
+
+  } catch (error) {
+
+    resultado.innerHTML =
+      "❌ Error al modificar\n\n" + error;
+  }
+}
+
+
+// BORRAR NFC
+async function borrarNFC() {
+
+  if (!verificarNFC()) return;
+
+  try {
+
+    const ndef = new NDEFReader();
+
+    resultado.innerHTML =
+      "📲 Acerca la NFC para borrar...";
+
+    await ndef.write("");
+
+    resultado.innerHTML =
+      "🗑️ NFC borrada correctamente";
+
+  } catch (error) {
+
+    resultado.innerHTML =
+      "❌ Error al borrar\n\n" + error;
+  }
+}
+
+</script>
+
 </body>
 </html>
-
-
 
 
 
