@@ -160,7 +160,7 @@
 
     window.onload = function(){
       console.log(objeto);
-      if(objeto === "camion"){
+      if(objeto.toLowerCase().trim() === "camion"){
           document.getElementById("data1").innerText ="Almacen";
           document.getElementById("data2").innerText ="Centro SAP";
           document.getElementById("data3").innerText ="Almacen Nest";
@@ -265,7 +265,7 @@
 
         //const texto = document.getElementById("codigoUnidad").value;
         var texto = `{"CodigoUnidad":"${codigoUnidadDes}","PlacaCamion":"${placaCamionDes}","PlacaFurgon":"${placaFurgonDes}"}`;
-        if(objeto === "camion"){
+        if(objeto.toLowerCase().trim() === "camion"){
           texto = `{"Almacen":"${codigoUnidadDes}","CentroSAP":"${placaCamionDes}","IdAlmacen":"${placaFurgonDes}"}`;
         }
 
